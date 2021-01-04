@@ -31,7 +31,7 @@
 	</ng-container> 
 
 	<tr mat-header-row *matHeaderRowDef="columnsToDisplay"></tr>
-	<tr mat-row *matRowDef="let element; columns: columnsToDisplay;" [class.example-element-row]="element.addresses?.data.length"
+	<tr mat-row *matRowDef="let element; columns: columnsToDisplay;" [class.example-element-row]="element.listCurrencies?.data.length"
 	 [class.example-expanded-row]="expandedElement === element" (click)="toggleRow(element)">
 	</tr>
 	<tr mat-row *matRowDef="let row; columns: ['expandedDetail']" class="example-detail-row"></tr>

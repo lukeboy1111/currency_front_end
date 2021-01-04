@@ -21,7 +21,8 @@ import { CurrenciesComponent } from './currencies/currencies.component';
 import { HomeComponent } from './home/home.component';
 import { CallbackComponent } from './callback/callback.component';
 import { HttpClientModule } from '@angular/common/http';
-import { HistoryComponent } from './history/history.component'; 
+import { HistoryComponent } from './history/history.component';
+import { SavedComponent } from './saved/saved.component'; 
 
 @NgModule({
   declarations: [
@@ -29,7 +30,8 @@ import { HistoryComponent } from './history/history.component';
     CurrenciesComponent,
     HomeComponent,
     CallbackComponent,
-    HistoryComponent
+    HistoryComponent,
+    SavedComponent
   ],
   imports: [
     AppRoutingModule,

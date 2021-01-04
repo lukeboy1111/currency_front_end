@@ -3,6 +3,7 @@ import { Routes, RouterModule } from '@angular/router';
 import { CurrenciesComponent } from './currencies/currencies.component';
 import { HistoryComponent } from './history/history.component';
 import { HomeComponent } from './home/home.component';
+import { SavedComponent } from './saved/saved.component';
 import { CallbackComponent } from './callback/callback.component'
 import { OktaAuthGuard } from './app.guard';
 
@@ -20,6 +21,11 @@ const routes: Routes = [
   {
     path: 'history',
     component: HistoryComponent,
+    canActivate: [OktaAuthGuard]
+  },
+  {
+    path: 'saved',
+    component: SavedComponent,
     canActivate: [OktaAuthGuard]
   },
   {

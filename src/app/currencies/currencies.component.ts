@@ -46,7 +46,7 @@ export class CurrenciesComponent implements OnInit {
   }
 
   async refresh() {
-    this.loading = true;
+    //this.loading = true;
     console.log("Starting update");
     let dailyData = await this.currencyService.getCurrencies().then(function (data) {
       const daily = new Daily().deserialize(data);

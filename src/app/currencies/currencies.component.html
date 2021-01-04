@@ -32,14 +32,22 @@ loading={{loading}}
 </mat-table>
   <mat-divider fxShow="false" fxShow.gt-sm [vertical]="true"></mat-divider>
   <div>
-    <h2>Selected Product</h2>
+    <h2>Selected Currency</h2>
+    <label>Conversion Amount (GBP)
+      <input type="text" [(ngModel)]="conversionAmount">
+    </label>
     <label>Name
       <input type="text" [(ngModel)]="selectedCurrency.currency">
     </label>
     <label>Rate of Exchange
       <input type="text" [(ngModel)]="selectedCurrency.rate">
     </label>
-    
+    <label>Converted Amount (GBP)
+      <input type="text" [(ngModel)]="calculatedAmount">
+    </label>
+    <label>Notes
+      <input type="text" [(ngModel)]="commentText">
+    </label>
     <button mat-flat-button color="primary" (click)="updateCurrency()">{{(selectedCurrency.id!==undefined)?'Save':'Create'}}</button>
     <button mat-flat-button color="primary" (click)="clearCurrency()">Clear</button>
   </div>
