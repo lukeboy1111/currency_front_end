@@ -1,0 +1,47 @@
+<h1 class="h1">Currencies</h1>
+<p>
+These are the latest updates from the ECB for today. Click on a currency to edit it.
+<br />
+loading={{loading}}
+</p>
+<div class="loading" *ngIf="loading">
+  <mat-spinner></mat-spinner>
+</div>
+<div *ngIf="!loading" fxLayout="row" fxLayout.xs="column" fxLayoutAlign="space-between stretch" class="currencies">
+<mat-table fxFlex="100%" fxFlex.gt-sm="66%" [dataSource]="dataSource" class="mat-elevation-z1">
+    <ng-container matColumnDef="currency">
+      <th mat-header-cell *matHeaderCellDef> Name</th>
+      <td mat-cell *matCellDef="let currency"> {{currency.currency}}</td>
+    </ng-container>
+    
+    <ng-container matColumnDef="rate">
+      <th mat-header-cell *matHeaderCellDef> Conversion Rate</th>
+      <td mat-cell *matCellDef="let currency"> {{currency.rate}}</td>
+    </ng-container>
+    <ng-container matColumnDef="edit">
+      <th mat-header-cell *matHeaderCellDef></th>
+      <td mat-cell *matCellDef="let currency">
+        <button mat-icon-button (click)="editCurrency(currency)">
+          <mat-icon>edit</mat-icon>
+        </button>
+      </td>
+    </ng-container>
+    
+    <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+    <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+</mat-table>
+  <mat-divider fxShow="false" fxShow.gt-sm [vertical]="true"></mat-divider>
+  <div>
+    <h2>Selected Product</h2>
+    <label>Name
+      <input type="text" [(ngModel)]="selectedCurrency.currency">
+    </label>
+    <label>Rate of Exchange
+      <input type="text" [(ngModel)]="selectedCurrency.rate">
+    </label>
+    
+    <button mat-flat-button color="primary" (click)="updateCurrency()">{{(selectedCurrency.id!==undefined)?'Save':'Create'}}</button>
+    <button mat-flat-button color="primary" (click)="clearCurrency()">Clear</button>
+  </div>
+  
+</div>

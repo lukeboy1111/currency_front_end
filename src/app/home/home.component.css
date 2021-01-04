@@ -1,0 +1,10 @@
+.hero {
+    text-align: center;
+    height: 90vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: left;
+    font-family: sans-serif;
+    margin-left: 10px;
+    
+  }
