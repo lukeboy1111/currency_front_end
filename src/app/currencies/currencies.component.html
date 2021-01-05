@@ -46,8 +46,7 @@ These are the latest updates from the ECB for today.
           <div *ngIf="f.comments.errors.required">comments are required</div>
       </div>
     </div>
-    <div class="form-group col-6" formGroupName="comments">
-      
+    <div class="form-group col-6">
       <div *ngIf="calculatedAmount === 0">
         &nbsp;-&nbsp;
       </div>
@@ -55,7 +54,7 @@ These are the latest updates from the ECB for today.
       
     </div>
     <div class="card-footer text-center border-top-0">
-      <button mat-flat-button color="primary">Save Quote</button>
+      <button mat-flat-button color="primary" (click)="saveItems()">Save Quote</button>
       <button mat-flat-button color="primary"  type="reset" (click)="onReset()">Reset</button>
       <button mat-flat-button color="primary"  type="button" (click)="onClear()">Clear</button>
   </div>

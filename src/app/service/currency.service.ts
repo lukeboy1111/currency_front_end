@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Currency } from '../model/currency';
+import { SaveCurrency } from '../model/savecurrency';
 import { OktaAuthService } from 'src/app/app.service';
 import { Daily } from 'src/app/model/daily';
 import { Constants } from 'src/app/model/constants';
@@ -104,9 +105,9 @@ export class CurrencyService {
     return this.request('post', `${baseUrl}/currency`, currency);
   }
 
-  updateCurrency(currency: Currency) {
+  saveCurrency(currency: SaveCurrency) {
     console.log('updatecurrency ' + JSON.stringify(currency));
-    return this.request('post', `${baseUrl}/currency/${currency.id}`, currency);
+    return this.request('post', `${baseUrl}/api/v1/data/save/`, currency);
   }
 
   deleteCurrency(id: string) {
