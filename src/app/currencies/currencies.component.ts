@@ -26,6 +26,7 @@ export class CurrenciesComponent implements OnInit {
   amountInputted: number
   commentText: string
   destinationCurrencyRate: number
+  saveMessageEnabled: boolean
   
   
   constructor(
@@ -42,6 +43,7 @@ export class CurrenciesComponent implements OnInit {
       targetCurrency: ['', Validators.required],
       currencies: new FormArray([])
     });
+    this.saveMessageEnabled = false;
     this.amountInputted = 0;
     this.sourceCurrencyDisplay = "";
     this.targetedCurrencyDisplay = "";
@@ -129,30 +131,19 @@ export class CurrenciesComponent implements OnInit {
     currencySave.comment = this.commentText
     console.log("amount = " + this.amountInputted);
     console.dir(currencySave);
-    await this.currencyService.saveCurrency(currencySave).then(function (data) {
-      // display form values on success
-      alert('SUCCESS!! :-)\n\n' + JSON.stringify(currencySave, null, 4));
-      this.submitted = false;
-    });
-  }
-
-  onSubmit() {
-    
-    this.saveItems();
+    await this.currencyService.saveCurrency(currencySave);
+    // display form values on success
+    this.saveMessageEnabled = true;
+    this.submitted = false;
     
   }
 
   onReset() {
     // reset whole form back to initial state
     this.submitted = false;
+    this.saveMessageEnabled = true;
     this.dynamicForm.reset();
     this.t.clear();
-  }
-
-  onClear() {
-      // clear errors and reset ticket fields
-      this.submitted = false;
-      this.t.reset();
   }
 
   async refresh() {

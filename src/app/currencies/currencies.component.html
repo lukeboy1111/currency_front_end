@@ -7,78 +7,80 @@ These are the latest updates from the ECB for today.
   <mat-spinner></mat-spinner>
 </div>
 <div *ngIf="!loading" fxLayout="row" fxLayout.xs="column" fxLayoutAlign="space-between stretch" class="currencies">
-<div class="currenciesForm">
-  <form [formGroup]="dynamicForm" (ngSubmit)="onSubmit()">
-    <h3 class="card-header">Currency Conversion Form</h3>  
-    <div class="form-group col-6">
-      <label>Amount</label>
-      <input type="text" formControlName="amount" class="form-control" (change)="onChangeAmount($event)" [ngClass]="{ 'is-invalid': submitted && f.amount.errors }" />
-      <div *ngIf="submitted && f.amount.errors" class="invalid-feedback">
-          <div *ngIf="f.amount.errors.required">Amount is required</div>
-      </div>
-    </div>
-    <div class="form-group">
-      <label>Source Currency</label>
-      <select formControlName="sourceCurrency" name="sourceCurrency" class="form-control" (change)="onChangeCurrency($event)" [ngClass]="{ 'is-invalid': submitted && f.sourceCurrency.errors }">
-        <option value=""></option>
-        <option *ngFor="let curr of currencyData" 
-          [value]="curr.id">{{curr.id}}</option>
-        </select>
-        <div *ngIf="submitted && f.sourceCurrency.errors" class="invalid-feedback">
-            <div *ngIf="f.sourceCurrency.errors.required">Source Currency is required</div>
+  <div class="currenciesForm">
+    <form [formGroup]="dynamicForm">
+      <h3 class="card-header">Currency Conversion Form</h3>
+      <p>Simply input the amount you'd like to convert and select currencies.</p>  
+      <div class="form-group col-6">
+        <label>Amount</label>
+        <input type="text" formControlName="amount" class="form-control" (change)="onChangeAmount($event)" [ngClass]="{ 'is-invalid': submitted && f.amount.errors }" />
+        <div *ngIf="submitted && f.amount.errors" class="invalid-feedback">
+            <div *ngIf="f.amount.errors.required">Amount is required</div>
         </div>
       </div>
-    <div class="form-group">
-      <label>Target Currency</label>
-      <select formControlName="targetCurrency" name="targetCurrency" class="form-control" (change)="onChangeTargetCurrency($event)" [ngClass]="{ 'is-invalid': submitted && f.targetCurrency.errors }">
-        <option value=""></option>
-        <option *ngFor="let curr of currencyData" 
-          [value]="curr.id">{{curr.id}}</option>
-        </select>
-        <div *ngIf="submitted && f.targetCurrency.errors" class="invalid-feedback">
-            <div *ngIf="f.targetCurrency.errors.required">Target Currency is required</div>
+      <div class="form-group">
+        <label>Source Currency</label>
+        <select formControlName="sourceCurrency" name="sourceCurrency" class="form-control" (change)="onChangeCurrency($event)" [ngClass]="{ 'is-invalid': submitted && f.sourceCurrency.errors }">
+          <option value=""></option>
+          <option *ngFor="let curr of currencyData" 
+            [value]="curr.id">{{curr.id}}</option>
+          </select>
+          <div *ngIf="submitted && f.sourceCurrency.errors" class="invalid-feedback">
+              <div *ngIf="f.sourceCurrency.errors.required">Source Currency is required</div>
+          </div>
         </div>
-    </div>
-    <div class="form-group col-6">
-      <label>Notes</label>
-      <input type="text" formControlName="comments" class="form-control" (change)="onChangeNotes($event)" [ngClass]="{ 'is-invalid': submitted && f.comments.errors }" />
-      <div *ngIf="submitted && f.comments.errors" class="invalid-feedback">
-          <div *ngIf="f.comments.errors.required">comments are required</div>
+      <div class="form-group">
+        <label>Target Currency</label>
+        <select formControlName="targetCurrency" name="targetCurrency" class="form-control" (change)="onChangeTargetCurrency($event)" [ngClass]="{ 'is-invalid': submitted && f.targetCurrency.errors }">
+          <option value=""></option>
+          <option *ngFor="let curr of currencyData" 
+            [value]="curr.id">{{curr.id}}</option>
+          </select>
+          <div *ngIf="submitted && f.targetCurrency.errors" class="invalid-feedback">
+              <div *ngIf="f.targetCurrency.errors.required">Target Currency is required</div>
+          </div>
       </div>
-    </div>
-    <div class="form-group col-6">
-      <div *ngIf="calculatedAmount === 0">
-        &nbsp;-&nbsp;
+      <div class="form-group col-6">
+        <label>Notes</label>
+        <input type="text" formControlName="comments" class="form-control" (change)="onChangeNotes($event)" [ngClass]="{ 'is-invalid': submitted && f.comments.errors }" />
+        <div *ngIf="submitted && f.comments.errors" class="invalid-feedback">
+            <div *ngIf="f.comments.errors.required">comments are required</div>
+        </div>
       </div>
-      <div *ngIf="calculatedAmount > 0"><strong>Calculated Amount</strong>: {{calculatedAmount | number:'1.02'}} {{targetedCurrencyDisplay}}</div>
-      <div *ngIf="calculatedAmount > 0"><strong>Rate Details</strong>: {{destinationCurrencyRate}} {{targetedCurrencyDisplay}}</div>
-    </div>
-    <div class="card-footer text-center border-top-0">
-      <button mat-flat-button color="primary" (click)="saveItems()">Save Quote</button>
-      <button mat-flat-button color="primary"  type="reset" (click)="onReset()">Reset</button>
-      <button mat-flat-button color="primary"  type="button" (click)="onClear()">Clear</button>
-  </div>
-  </form>
+      <div class="form-group col-6">
+        <div *ngIf="calculatedAmount === 0">
+          &nbsp;-&nbsp;
+        </div>
+        <div *ngIf="calculatedAmount > 0"><br /><strong>Calculated Amount</strong>: {{calculatedAmount | number:'1.02'}} {{targetedCurrencyDisplay}}</div>
+        <div *ngIf="calculatedAmount > 0"><br /><strong>Rate Details</strong>: {{destinationCurrencyRate}} {{targetedCurrencyDisplay}}</div>
+      </div>
+      <div class="card-footer text-center border-top-0">
+        <button mat-flat-button color="primary" type="button" (click)="saveItems()">Save Quote</button>
+        <button mat-flat-button color="primary"  type="reset" (click)="onReset()">Reset</button>
+      </div>
+      <div *ngIf="saveMessageEnabled" class="saveMessage">
+          The item was saved
+      </div>
+    </form>
 
-</div>
-<div class="clear"></div>
-<div class="currencies">
-  <h3 class="card-header">Today's Conversion Rates</h3>  
-  <table class='table table-striped'>
-    <thead>
-      <tr>
-        <th>Currency</th>
-        <th>Conversion Rate</th>
-      </tr>
-    </thead>
-    <tbody *ngFor="let item of currencyData; index as i; even as isEven; odd as isOdd">
-      <tr>
-        <td>{{item.currency}}</td>
-        <td>{{item.rate}}</td>
-      </tr>
-            
-    </tbody> 
-  </table>
-</div>
-  
+  </div>
+  <div class="clear"></div>
+  <div class="currencies">
+    <h3 class="card-header">Today's Conversion Rates</h3>  
+    <table class='table table-striped'>
+      <thead>
+        <tr>
+          <th>Currency</th>
+          <th>Conversion Rate</th>
+        </tr>
+      </thead>
+      <tbody *ngFor="let item of currencyData; index as i; even as isEven; odd as isOdd">
+        <tr>
+          <td>{{item.currency}}</td>
+          <td>{{item.rate}}</td>
+        </tr>
+              
+      </tbody> 
+    </table>
+  </div>
 </div>

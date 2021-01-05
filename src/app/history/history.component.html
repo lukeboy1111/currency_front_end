@@ -1,38 +1,40 @@
 <h1> Historical ECB Data</h1>
 <p>
-{{loading}}
-
+This item shows historical ECB data.
 </p>
-<table mat-table [dataSource]="dataSource" multiTemplateDataRows class="mat-elevation-z8">
-	<ng-container matColumnDef="{{column}}" *ngFor="let column of columnsToDisplay">
-		<th mat-header-cell *matHeaderCellDef mat-sort-header> {{column}} </th>
-		<td mat-cell *matCellDef="let element"> {{element[column]}} </td>
-	</ng-container>
+<div class="loading" *ngIf="loading">
+	<mat-spinner></mat-spinner>
+  </div>
+<div *ngIf="!loading" class="currencies">
+	<h3 class="card-header">Historical Conversion Rates</h3>  
+	<form [formGroup]="dynamicForm">
+		<label>Please Select A Date</label>
+		<select formControlName="theDate" id="theDate" name="theDate" (change)="onChangeDate($event)">
+			<option value=""></option>
+			<option *ngFor="let curr of loadedData" 
+          		[value]="curr.theDate">{{curr.theDate}}</option>
+        </select>
+	</form>
 
-	<!-- Expanded Content Column - The detail row is made up of this one column that spans across all columns -->
-	<ng-container matColumnDef="expandedDetail">
-		<td mat-cell *matCellDef="let element" [attr.colspan]="columnsToDisplay.length">
-			<div class="example-element-detail" *ngIf="element.addresses?.data.length" [@detailExpand]="element == expandedElement ? 'expanded' : 'collapsed'">
-				<div class="inner-table mat-elevation-z8" *ngIf="expandedElement">
-          <mat-form-field>
-            <input matInput (keyup)="applyFilter($event.target.value)" placeholder="Filter">
-          </mat-form-field>
-          <table #innerTables mat-table [dataSource]="element.addresses"> 
-            <ng-container matColumnDef="{{innerColumn}}" *ngFor="let innerColumn of innerDisplayedColumns">
-              <th mat-header-cell *matHeaderCellDef mat-sort-header> {{innerColumn}} </th>
-              <td mat-cell *matCellDef="let element"> {{element[innerColumn]}} </td>
-            </ng-container>
-            <tr mat-header-row *matHeaderRowDef="innerDisplayedColumns"></tr>
-            <tr mat-row *matRowDef="let row; columns: innerDisplayedColumns;"></tr>
-          </table>
-				</div>
-			</div>
-		</td>
-	</ng-container> 
-
-	<tr mat-header-row *matHeaderRowDef="columnsToDisplay"></tr>
-	<tr mat-row *matRowDef="let element; columns: columnsToDisplay;" [class.example-element-row]="element.listCurrencies?.data.length"
-	 [class.example-expanded-row]="expandedElement === element" (click)="toggleRow(element)">
-	</tr>
-	<tr mat-row *matRowDef="let row; columns: ['expandedDetail']" class="example-detail-row"></tr>
-</table>
+	<div *ngIf="selected">
+		<br />
+		<h3>Data For Date: {{selectedData.theDate}}</h3>	
+		<table class='table table-striped'>
+		<thead>
+			<tr>
+			<th>Date</th>
+			<th>Currency</th>
+			<th>Rate</th>
+			</tr>
+		</thead>
+		<tbody>
+			<tr *ngFor="let currency of selectedData.rates">
+			<td>{{selectedData.theDate}}</td>
+			<td>{{currency.currency}}</td>
+			<td>{{currency.rate}}</td>
+				
+			</tr>	  
+		</tbody> 
+		</table>
+	</div>
+</div>

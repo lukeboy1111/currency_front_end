@@ -11,9 +11,6 @@ export class Daily implements Deserializable {
     Object.assign(this, input);
     // Iterate over all listCurrencies for our user and map them to a proper `Rates` model
     this.rates = input.listCurrencies.map(rates => new Currency().deserialize(rates));
-    console.log("DESERIALISE")
-    console.dir(this);
-    console.log("END DESERIALISE")
     return this;
   }
 

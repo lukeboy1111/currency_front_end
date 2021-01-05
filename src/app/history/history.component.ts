@@ -1,83 +1,53 @@
-import { Component, ViewChild, ViewChildren, QueryList, ChangeDetectorRef, OnInit } from '@angular/core';
-import { MatTableDataSource, MatTable } from '@angular/material/table';
-import { animate, state, style, transition, trigger } from '@angular/animations';
-import { Currency } from '../model/currency';
+import { Component, OnInit } from '@angular/core';
+import { FormBuilder, FormGroup, FormArray, Validators } from '@angular/forms';
+import { Daily } from 'src/app/model/daily';
 import { HistoryService } from 'src/app/service/history.service';
-import { MatSort } from '@angular/material/sort';
 
 @Component({
   selector: 'app-history',
   templateUrl: './history.component.html',
-  styleUrls: ['./history.component.css'],
-  animations: [
-    trigger('detailExpand', [
-      state('collapsed', style({ height: '0px', minHeight: '0' })),
-      state('expanded', style({ height: '*' })),
-      transition('expanded <=> collapsed', animate('225ms cubic-bezier(0.4, 0.0, 0.2, 1)')),
-    ]),
-  ],
+  styleUrls: ['./history.component.css']
 })
 export class HistoryComponent implements OnInit {
-
-  @ViewChild('outerSort', { static: true }) sort: MatSort;
-  @ViewChildren('innerSort') innerSort: QueryList<MatSort>;
-  @ViewChildren('innerTables') innerTables: QueryList<MatTable<CurrencyInfo>>;
-
-  columnsToDisplay = ['theDate'];
-  innerDisplayedColumns = ['currency', 'rate'];
-  expandedElement: CurrencyHolder | null;
-  selectedCurrency: Currency = new Currency();
-  dataSource: MatTableDataSource<any>;
+  dynamicForm: FormGroup;
   loading = false;
-  currencyData: Currency[] = [];
+  loadedData;
+  selectedData: Daily;
+  selected: Boolean;
   
   constructor(
-    private cd: ChangeDetectorRef,
+    private formBuilder: FormBuilder,
     private historyService: HistoryService
   ) { }
 
   ngOnInit() {
+    this.selected = false;
+    this.dynamicForm = this.formBuilder.group({
+      theDate: ['', Validators.required]
+    });
     this.refresh();
   }
 
   async refresh() {
     this.loading = true;
     const data = await this.historyService.getCurrenciesHistory();
-    data.forEach(currencyItem => {
-      if (currencyItem.listCurrencies && Array.isArray(currencyItem.listCurrencies) && currencyItem.listCurrencies.length) {
-        this.currencyData = [...this.currencyData, { ...currencyItem, listCurrencies: new MatTableDataSource(currencyItem.listCurrencies) }];
-      } else {
-        this.currencyData = [...this.currencyData, currencyItem];
-      }
-    });
-    this.dataSource = new MatTableDataSource(this.currencyData);
-    this.dataSource.sort = this.sort;
+    this.loadedData = data;
     this.loading = false;
   }
 
-  toggleRow(element: CurrencyHolder) {
-    element.listCurrencies && (element.listCurrencies as MatTableDataSource<CurrencyInfo>).data.length ? (this.expandedElement = this.expandedElement === element ? null : element) : null;
-    this.cd.detectChanges();
-    this.innerTables.forEach((table, index) => (table.dataSource as MatTableDataSource<CurrencyInfo>).sort = this.innerSort.toArray()[index]);
+  onChangeDate(e) {
+    console.dir(e);
+    const theDateSelected = e.target.value || "";
+    console.log("Comparing " + theDateSelected);
+    for (let i = 0; i < this.loadedData.length; i++) {
+      let theDateData = this.loadedData[i];
+      let scopedData = new Daily();
+      scopedData.deserialize(theDateData);
+      if (scopedData.theDate === theDateSelected) {
+        this.selectedData = scopedData;
+        this.selected = true;
+      }
+    }
   }
-
-  applyFilter(filterValue: string) {
-    this.innerTables.forEach((table, index) => (table.dataSource as MatTableDataSource<CurrencyInfo>).filter = filterValue.trim().toLowerCase());
-  }
-}
-
-export interface CurrencyHolder {
-  theDate: string;
-  listCurrencies?: CurrencyInfo[] | MatTableDataSource<CurrencyInfo>;
-}
-
-export interface CurrencyInfo {
-  id: string;
-  currency: string;
-  rate: number;
-}
-
-export interface UserDataSource {
-  currency: string;
-  addresses?: MatTableDataSource<CurrencyInfo>;
+  
 }
