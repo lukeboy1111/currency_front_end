@@ -7,7 +7,7 @@ import { Daily } from 'src/app/model/daily';
 import { Constants } from 'src/app/model/constants';
 import {map} from 'rxjs/operators';
 
-const baseUrl = 'http://localhost:4201';
+const baseUrl = '';
 
 @Injectable({
   providedIn: 'root'

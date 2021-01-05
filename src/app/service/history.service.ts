@@ -3,7 +3,7 @@ import { HttpClient } from '@angular/common/http';
 import { Currency } from '../model/currency';
 import { OktaAuthService } from 'src/app/app.service';
 
-const baseUrl = 'http://localhost:4201';
+const baseUrl = '';
 
 @Injectable({
   providedIn: 'root'

@@ -8,8 +8,8 @@ export class OktaAuthService {
 
   CLIENT_ID = '0oa3cyfnsL5rdoSrC5d6';
   ISSUER = 'https://dev-4020503.okta.com/oauth2/default' 
-  LOGIN_REDIRECT_URI = 'https://demo.campbells.im/currency/callback';
-  LOGOUT_REDIRECT_URI = 'https://demo.campbells.im/currency/'; 
+  LOGIN_REDIRECT_URI = 'https://demo.lukecampbell.net/callback';
+  LOGOUT_REDIRECT_URI = 'https://demo.lukecampbell.net'; 
 
   oktaAuth = new OktaAuth({
     clientId: this.CLIENT_ID,
