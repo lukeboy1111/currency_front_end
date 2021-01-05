@@ -9,7 +9,8 @@ export class Currency implements Deserializable {
     source?: string;
     comment?: string;
     sourceCurrency?: string;
-  
+    dateOfEntry?: string;  
+
     deserialize(input: any): this {
       return Object.assign(this, input);
     }

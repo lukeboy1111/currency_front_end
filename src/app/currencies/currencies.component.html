@@ -1,55 +1,85 @@
 <h1 class="h1">Currencies</h1>
 <p>
-These are the latest updates from the ECB for today. Click on a currency to edit it.
-<br />
-loading={{loading}}
+These are the latest updates from the ECB for today. 
+
 </p>
 <div class="loading" *ngIf="loading">
   <mat-spinner></mat-spinner>
 </div>
 <div *ngIf="!loading" fxLayout="row" fxLayout.xs="column" fxLayoutAlign="space-between stretch" class="currencies">
-<mat-table fxFlex="100%" fxFlex.gt-sm="66%" [dataSource]="dataSource" class="mat-elevation-z1">
-    <ng-container matColumnDef="currency">
-      <th mat-header-cell *matHeaderCellDef> Name</th>
-      <td mat-cell *matCellDef="let currency"> {{currency.currency}}</td>
-    </ng-container>
-    
-    <ng-container matColumnDef="rate">
-      <th mat-header-cell *matHeaderCellDef> Conversion Rate</th>
-      <td mat-cell *matCellDef="let currency"> {{currency.rate}}</td>
-    </ng-container>
-    <ng-container matColumnDef="edit">
-      <th mat-header-cell *matHeaderCellDef></th>
-      <td mat-cell *matCellDef="let currency">
-        <button mat-icon-button (click)="editCurrency(currency)">
-          <mat-icon>edit</mat-icon>
-        </button>
-      </td>
-    </ng-container>
-    
-    <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-    <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
-</mat-table>
-  <mat-divider fxShow="false" fxShow.gt-sm [vertical]="true"></mat-divider>
-  <div>
-    <h2>Selected Currency</h2>
-    <label>Conversion Amount (GBP)
-      <input type="text" [(ngModel)]="conversionAmount">
-    </label>
-    <label>Name
-      <input type="text" [(ngModel)]="selectedCurrency.currency">
-    </label>
-    <label>Rate of Exchange
-      <input type="text" [(ngModel)]="selectedCurrency.rate">
-    </label>
-    <label>Converted Amount (GBP)
-      <input type="text" [(ngModel)]="calculatedAmount">
-    </label>
-    <label>Notes
-      <input type="text" [(ngModel)]="commentText">
-    </label>
-    <button mat-flat-button color="primary" (click)="updateCurrency()">{{(selectedCurrency.id!==undefined)?'Save':'Create'}}</button>
-    <button mat-flat-button color="primary" (click)="clearCurrency()">Clear</button>
+<div class="currenciesForm">
+  <form [formGroup]="dynamicForm" (ngSubmit)="onSubmit()">
+    <h3 class="card-header">Currency Conversion Form</h3>  
+    <div class="form-group col-6" formGroupName="amount">
+      <label>Amount</label>
+      <input type="text" formControlName="amount" class="form-control" (change)="onChangeAmount($event)" [ngClass]="{ 'is-invalid': submitted && f.amount.errors }" />
+      <div *ngIf="submitted && f.amount.errors" class="invalid-feedback">
+          <div *ngIf="f.amount.errors.required">Amount is required</div>
+      </div>
+    </div>
+    <div class="form-group">
+      <label>Source Currency</label>
+      <select formControlName="sourceCurrency" name="sourceCurrency" class="form-control" (change)="onChangeCurrency($event)" [ngClass]="{ 'is-invalid': submitted && f.sourceCurrency.errors }">
+        <option value=""></option>
+        <option *ngFor="let curr of currencyData" 
+          [value]="curr.id">{{curr.id}}</option>
+        </select>
+        <div *ngIf="submitted && f.sourceCurrency.errors" class="invalid-feedback">
+            <div *ngIf="f.sourceCurrency.errors.required">Source Currency is required</div>
+        </div>
+      </div>
+    <div class="form-group">
+      <label>Target Currency</label>
+      <select formControlName="targetCurrency" name="targetCurrency" class="form-control" (change)="onChangeTargetCurrency($event)" [ngClass]="{ 'is-invalid': submitted && f.targetCurrency.errors }">
+        <option value=""></option>
+        <option *ngFor="let curr of currencyData" 
+          [value]="curr.id">{{curr.id}}</option>
+        </select>
+        <div *ngIf="submitted && f.targetCurrency.errors" class="invalid-feedback">
+            <div *ngIf="f.targetCurrency.errors.required">Target Currency is required</div>
+        </div>
+    </div>
+    <div class="form-group col-6" formGroupName="comments">
+      <label>Notes</label>
+      <input type="text" formControlName="comments" class="form-control" (change)="onChangeAmount($event)" [ngClass]="{ 'is-invalid': submitted && f.comments.errors }" />
+      <div *ngIf="submitted && f.comments.errors" class="invalid-feedback">
+          <div *ngIf="f.comments.errors.required">comments are required</div>
+      </div>
+    </div>
+    <div class="form-group col-6" formGroupName="comments">
+      
+      <div *ngIf="calculatedAmount === 0">
+        &nbsp;-&nbsp;
+      </div>
+      <div *ngIf="calculatedAmount > 0"><strong>Calculated Amount</strong>: {{calculatedAmount | number:'1.02'}} {{targetedCurrencyDisplay}}</div>
+      
+    </div>
+    <div class="card-footer text-center border-top-0">
+      <button mat-flat-button color="primary">Save Quote</button>
+      <button mat-flat-button color="primary"  type="reset" (click)="onReset()">Reset</button>
+      <button mat-flat-button color="primary"  type="button" (click)="onClear()">Clear</button>
   </div>
+  </form>
+
+</div>
+<div class="clear"></div>
+<div class="currencies">
+  <h3 class="card-header">Today's Conversion Rates</h3>  
+  <table class='table table-striped'>
+    <thead>
+      <tr>
+        <th>Currency</th>
+        <th>Conversion Rate</th>
+      </tr>
+    </thead>
+    <tbody *ngFor="let item of currencyData; index as i; even as isEven; odd as isOdd">
+      <tr>
+        <td>{{item.currency}}</td>
+        <td>{{item.rate}}</td>
+      </tr>
+            
+    </tbody> 
+  </table>
+</div>
   
 </div>

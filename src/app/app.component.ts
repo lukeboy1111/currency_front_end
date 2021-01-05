@@ -7,7 +7,7 @@ import { OktaAuthService } from './app.service';
   styleUrls: ['./app.component.css']
 })
 export class AppComponent implements OnInit {
-  title = 'Currency App';
+  title = 'Currency Display and Conversion';
   isAuthenticated: boolean;
   constructor(public oktaAuth: OktaAuthService) {
     this.oktaAuth.$isAuthenticated.subscribe(

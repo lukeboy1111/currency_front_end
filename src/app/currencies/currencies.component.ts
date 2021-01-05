@@ -1,10 +1,12 @@
-import { Component, OnInit, Input, OnChanges, SimpleChanges, ChangeDetectorRef,  ChangeDetectionStrategy } from '@angular/core';
-import { MatTableDataSource, MatTableModule } from '@angular/material/table';
+import { Component, OnInit, Input, ChangeDetectorRef, ChangeDetectionStrategy } from '@angular/core';
+import { FormBuilder, FormGroup, FormArray, Validators } from '@angular/forms';
 import { Currency } from '../model/currency';
+import { SaveCurrency } from '../model/savecurrency';
 import { CurrencyService } from 'src/app/service/currency.service';
 import { Observable } from 'rxjs';
 import { NumberFormatStyle } from '@angular/common';
 import { Daily } from 'src/app/model/daily';
+import { Constants } from 'src/app/model/constants';
 
 @Component({
   selector: 'app-currencies',
@@ -13,63 +15,149 @@ import { Daily } from 'src/app/model/daily';
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class CurrenciesComponent implements OnInit {
-  displayedColumns: string[] = ['currency', 'rate', 'edit'];
+  dynamicForm: FormGroup;
+  submitted = false;
   selectedCurrency: Currency = new Currency();
-  dataSource: MatTableDataSource<any>;
   loading = false;
   currencyData: Currency[] = [];
   
   selectedTheCurrency = false;
-  
+  sourceCurrency: string 
   calculatedAmount: number
+  targetedCurrencyDisplay: string
+  sourceCurrencyDisplay: string
+  amountInputted: number
   commentText: string
   
   @Input() conversionAmount: Observable<number>;
 
   constructor(
     private cd: ChangeDetectorRef,
+    private formBuilder: FormBuilder,
     private currencyService: CurrencyService
   ) {}
 
   ngOnInit() {
     console.log("in ngOnInit Starting");
+    
+    this.dynamicForm = this.formBuilder.group({
+      amount: ['', Validators.required, Validators.min],
+      sourceCurrency: ['', Validators.required],
+      targetCurrency: ['', Validators.required],
+      currencies: new FormArray([])
+    });
     this.selectedCurrency = new Currency();
+    this.sourceCurrency = "";
     this.commentText = "";
     this.calculatedAmount = 0;
     this.refresh();
+    this.loading = false
+    console.log("END INIT")
   }
 
-  ngOnChanges(changes: SimpleChanges) {
-    console.log("in changes: Starting");
-    // changes.prop contains the old and the new value...
-    console.dir(changes);
+  // convenience getters for easy access to form fields
+  get f() { return this.dynamicForm.controls; }
+  get t() { return this.f.currencies as FormArray; }
+  get currencyFormGroups() { return this.t.controls as FormGroup[]; }
+
+  onChangeCurrency(e) {
+    const theCurrencySelected = e.target.value || "";
+    if (theCurrencySelected === "") {
+      this.t.push(this.formBuilder.group({
+        sourceCurrency: ['', Validators.required]
+      }));  
+    }
+    this.sourceCurrencyDisplay = theCurrencySelected;
+    this.calculatedAmount = this.currencyService.calculateAmount(this.amountInputted, this.sourceCurrencyDisplay, this.targetedCurrencyDisplay)
+  }
+
+  onChangeTargetCurrency(e) {
+    const theCurrencySelected = e.target.value || "";
+    if (theCurrencySelected === "") {
+      this.t.push(this.formBuilder.group({
+        targetCurrency: ['', Validators.required]
+      }));  
+    }
+    this.targetedCurrencyDisplay = theCurrencySelected;
+    this.calculatedAmount = this.currencyService.calculateAmount(this.amountInputted, this.sourceCurrencyDisplay, this.targetedCurrencyDisplay)
+  }
+
+  onChangeNotes(e) {
+    
+  }
+
+  onChangeAmount(e) {
+    const amountConversion = e.target.value || 0;
+    if (!Number.isFinite(amountConversion)) {
+      this.t.push(this.formBuilder.group({
+        amount: ['', Validators.required]
+      }));
+    }
+    this.amountInputted = amountConversion
+    this.calculatedAmount = this.currencyService.calculateAmount(this.amountInputted, this.sourceCurrencyDisplay, this.targetedCurrencyDisplay)
+  }
+
+  onSubmit() {
+    this.submitted = true;
+
+    // stop here if form is invalid
+    if (this.dynamicForm.invalid) {
+        return;
+    }
+    let currencySave = new SaveCurrency();
+    currencySave.amount = this.amountInputted;
+    currencySave.calculatedAmount = this.calculatedAmount;
+    currencySave.source = Constants.ECB;
+    currencySave.currency = this.targetedCurrencyDisplay;
+    currencySave.sourceCurrency = this.sourceCurrencyDisplay;
+    
+    // display form values on success
+    alert('SUCCESS!! :-)\n\n' + JSON.stringify(this.dynamicForm.value, null, 4));
+  }
+
+  onReset() {
+    // reset whole form back to initial state
+    this.submitted = false;
+    this.dynamicForm.reset();
+    this.t.clear();
+  }
+
+  onClear() {
+      // clear errors and reset ticket fields
+      this.submitted = false;
+      this.t.reset();
   }
 
   async refresh() {
-    //this.loading = true;
-    console.log("Starting update");
-    let dailyData = await this.currencyService.getCurrencies().then(function (data) {
-      const daily = new Daily().deserialize(data);
-      console.dir(daily);
-      return daily;
-    }) as Daily;
-    
-    
-    //let data = await this.currencyService.getCurrencies();
+    this.loading = true;
+    let dailyData = await this.currencyService.getCurrencies() as Daily;
     this.currencyData = dailyData.getRates()
-    this.dataSource = new MatTableDataSource(this.currencyData);
-    //this.dataSource.sort = this.sort;
+    console.log("END REFRESH")
     this.loading = false;
-    console.log("END update loading="+this.loading)
     
   }
 
   async updateCurrency() {
+    console.log("**** Update Currency");
+    console.dir(this.selectedCurrency);
+    let currencySave = new SaveCurrency();
+    currencySave.rate = this.selectedCurrency.rate;
+    currencySave.currency = this.selectedCurrency.currency;
+    currencySave.source = this.sourceCurrency;
+    currencySave.comment = this.commentText;
+
     if (this.selectedCurrency.id !== undefined) {
-      await this.currencyService.updateCurrency(this.selectedCurrency);
+      if (Number.isFinite(this.conversionAmount)) {
+        currencySave.calculatedAmount = this.calculatedAmount * currencySave.rate;
+        this.calculatedAmount = currencySave.calculatedAmount;
+      }
+      
+      console.dir(currencySave);
+      //await this.currencyService.updateCurrency(this.selectedCurrency);
       
     } else {
-      await this.currencyService.createCurrency(this.selectedCurrency);
+      
+      //await this.currencyService.createCurrency(this.selectedCurrency);
     }
     this.selectedCurrency = new Currency();
     await this.refresh();
