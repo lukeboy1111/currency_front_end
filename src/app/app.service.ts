@@ -6,10 +6,10 @@ import { OktaAuth } from '@okta/okta-auth-js';
 @Injectable({providedIn: 'root'})
 export class OktaAuthService {
 
-  CLIENT_ID = '0oa39xokgyOZpkpoe5d6';
+  CLIENT_ID = '0oa3cyfnsL5rdoSrC5d6';
   ISSUER = 'https://dev-4020503.okta.com/oauth2/default' 
-  LOGIN_REDIRECT_URI = 'http://localhost:4200/callback';
-  LOGOUT_REDIRECT_URI = 'http://localhost:4200/'; 
+  LOGIN_REDIRECT_URI = 'https://demo.campbells.im/currency/callback';
+  LOGOUT_REDIRECT_URI = 'https://demo.campbells.im/currency/'; 
 
   oktaAuth = new OktaAuth({
     clientId: this.CLIENT_ID,
