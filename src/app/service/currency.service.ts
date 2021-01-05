@@ -79,6 +79,18 @@ export class CurrencyService {
     return convertedCalcAmount;
   }
 
+  getRateForCurrency(targetCurrency: string): number {
+    let rates = this.dailyData.rates;
+    let convertedCalcAmount = 0;
+    for (let i = 0; i < rates.length; i++) {
+      let currentRate = rates[i];
+      if (currentRate.currency === targetCurrency) {
+        convertedCalcAmount = currentRate.rate
+      }
+    }
+    return convertedCalcAmount;
+  }
+
   async getCurrencies() {
     console.log('call would be to ' + `${baseUrl}/api/v1/currency/today/`)
     this.dailyData = await this.loadCurrencies().then(function (data) {

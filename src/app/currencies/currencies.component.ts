@@ -25,6 +25,7 @@ export class CurrenciesComponent implements OnInit {
   sourceCurrencyDisplay: string
   amountInputted: number
   commentText: string
+  destinationCurrencyRate: number
   
   
   constructor(
@@ -44,6 +45,7 @@ export class CurrenciesComponent implements OnInit {
     this.amountInputted = 0;
     this.sourceCurrencyDisplay = "";
     this.targetedCurrencyDisplay = "";
+    this.destinationCurrencyRate = 0;
     this.selectedCurrency = new Currency();
     this.sourceCurrency = "";
     this.commentText = "";
@@ -77,11 +79,13 @@ export class CurrenciesComponent implements OnInit {
       }));  
     }
     this.targetedCurrencyDisplay = theCurrencySelected;
+    this.destinationCurrencyRate = this.currencyService.getRateForCurrency(this.targetedCurrencyDisplay)
     this.calculatedAmount = this.currencyService.calculateAmount(this.amountInputted, this.sourceCurrencyDisplay, this.targetedCurrencyDisplay)
   }
 
   onChangeNotes(e) {
-    
+    const commentSelected = e.target.value || "";
+    this.commentText = commentSelected;
   }
 
   onChangeAmount(e) {
@@ -121,6 +125,10 @@ export class CurrenciesComponent implements OnInit {
     currencySave.source = Constants.ECB;
     currencySave.currency = this.targetedCurrencyDisplay;
     currencySave.sourceCurrency = this.sourceCurrencyDisplay;
+    currencySave.rate = this.destinationCurrencyRate
+    currencySave.comment = this.commentText
+    console.log("amount = " + this.amountInputted);
+    console.dir(currencySave);
     await this.currencyService.saveCurrency(currencySave).then(function (data) {
       // display form values on success
       alert('SUCCESS!! :-)\n\n' + JSON.stringify(currencySave, null, 4));

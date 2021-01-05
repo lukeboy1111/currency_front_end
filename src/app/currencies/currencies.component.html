@@ -10,7 +10,7 @@ These are the latest updates from the ECB for today.
 <div class="currenciesForm">
   <form [formGroup]="dynamicForm" (ngSubmit)="onSubmit()">
     <h3 class="card-header">Currency Conversion Form</h3>  
-    <div class="form-group col-6" formGroupName="amount">
+    <div class="form-group col-6">
       <label>Amount</label>
       <input type="text" formControlName="amount" class="form-control" (change)="onChangeAmount($event)" [ngClass]="{ 'is-invalid': submitted && f.amount.errors }" />
       <div *ngIf="submitted && f.amount.errors" class="invalid-feedback">
@@ -39,9 +39,9 @@ These are the latest updates from the ECB for today.
             <div *ngIf="f.targetCurrency.errors.required">Target Currency is required</div>
         </div>
     </div>
-    <div class="form-group col-6" formGroupName="comments">
+    <div class="form-group col-6">
       <label>Notes</label>
-      <input type="text" formControlName="comments" class="form-control" (change)="onChangeAmount($event)" [ngClass]="{ 'is-invalid': submitted && f.comments.errors }" />
+      <input type="text" formControlName="comments" class="form-control" (change)="onChangeNotes($event)" [ngClass]="{ 'is-invalid': submitted && f.comments.errors }" />
       <div *ngIf="submitted && f.comments.errors" class="invalid-feedback">
           <div *ngIf="f.comments.errors.required">comments are required</div>
       </div>
@@ -51,7 +51,7 @@ These are the latest updates from the ECB for today.
         &nbsp;-&nbsp;
       </div>
       <div *ngIf="calculatedAmount > 0"><strong>Calculated Amount</strong>: {{calculatedAmount | number:'1.02'}} {{targetedCurrencyDisplay}}</div>
-      
+      <div *ngIf="calculatedAmount > 0"><strong>Rate Details</strong>: {{destinationCurrencyRate}} {{targetedCurrencyDisplay}}</div>
     </div>
     <div class="card-footer text-center border-top-0">
       <button mat-flat-button color="primary" (click)="saveItems()">Save Quote</button>
